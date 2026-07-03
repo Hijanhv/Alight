@@ -31,6 +31,17 @@ npm run build
 npm start
 ```
 
+## Leads (Supabase)
+
+Quiz emails POST to `/api/lead`. **Without Supabase configured, the app still works** —
+leads are just logged, not stored. To actually save them:
+
+1. Create a free project at [supabase.com](https://supabase.com).
+2. Run [`supabase/schema.sql`](supabase/schema.sql) in the SQL editor (creates the `leads` table).
+3. Copy `.env.example` to `.env.local` and fill in `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`
+   (Project Settings → API). The service-role key stays **server-side only** — never `NEXT_PUBLIC`.
+4. Add the same two vars in Vercel → Project → Settings → Environment Variables.
+
 ## Structure
 
 ```

@@ -18,6 +18,20 @@ const OPTIONS = [
   { v: 0, label: "Rarely", mark: "○" },
 ];
 
+// Fire-and-forget lead capture — never blocks or breaks the quiz UI.
+function saveLead(payload: Record<string, unknown>) {
+  try {
+    fetch("/api/lead", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      keepalive: true,
+    }).catch(() => {});
+  } catch {
+    /* ignore */
+  }
+}
+
 function sectionOf(index: number) {
   let n = 0;
   for (const s of sections) {
@@ -62,7 +76,15 @@ export default function Quiz() {
     e.preventDefault();
     const r = scoreQuiz(answers);
     setResult(r);
-    // TODO: persist lead to Supabase (email, name, r.type.key, r.regulationScore)
+    saveLead({
+      email,
+      name,
+      stage: "result",
+      typeKey: r.type.key,
+      regulationScore: r.regulationScore,
+      wired: r.wired,
+      shutdown: r.shutdown,
+    });
     setPhase("result");
   }
 
@@ -215,7 +237,17 @@ export default function Quiz() {
               result={result}
               name={name}
               submitted={submitted}
-              onEarlyAccess={() => setSubmitted(true)}
+              onEarlyAccess={() => {
+                setSubmitted(true);
+                saveLead({
+                  email,
+                  name,
+                  stage: "early_access",
+                  planInterest: chosenPlan,
+                  typeKey: result?.type.key,
+                  regulationScore: result?.regulationScore,
+                });
+              }}
               chosenPlan={chosenPlan}
               setChosenPlan={setChosenPlan}
             />
