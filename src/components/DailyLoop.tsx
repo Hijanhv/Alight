@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import BrandMark from "./BrandMark";
 import BreathTimer from "./BreathTimer";
-import { resultTypes } from "@/lib/quiz-data";
+import { pickProtocol } from "@/lib/protocols";
 import {
   loadProfile,
   loadProgress,
@@ -73,7 +73,7 @@ export default function DailyLoop() {
   }
 
   const doneToday = completedToday(progress);
-  const proto = resultTypes[state]?.protocol ?? resultTypes.wired.protocol;
+  const proto = pickProtocol(state, progress.totalSessions);
   const greetName = profile?.name ? `, ${profile.name}` : "";
 
   function finishWin() {

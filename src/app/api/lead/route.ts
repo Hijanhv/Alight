@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase";
+import { sendWelcomeEmail } from "@/lib/email";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -28,33 +29,36 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "invalid email" }, { status: 400 });
   }
 
+  // Store the lead (best-effort — never blocks the funnel).
+  let stored = false;
   const supabase = getSupabaseAdmin();
-  if (!supabase) {
-    // No Supabase configured yet — log so nothing is silently lost, and let the UI continue.
-    console.log("[lead] (no Supabase configured)", {
+  if (supabase) {
+    const { error } = await supabase.from("leads").insert({
+      email,
+      name: body.name ?? null,
+      type_key: body.typeKey ?? null,
+      regulation_score: body.regulationScore ?? null,
+      wired: body.wired ?? null,
+      shutdown: body.shutdown ?? null,
+      plan_interest: body.planInterest ?? null,
+      stage: body.stage ?? null,
+      source: "quiz",
+    });
+    if (error) console.error("[lead] insert error:", error.message);
+    else stored = true;
+  } else {
+    console.log("[lead] (no Supabase configured)", { email, stage: body.stage });
+  }
+
+  // Welcome email when they complete the quiz (best-effort; skips if Resend unset).
+  if (body.stage === "result") {
+    await sendWelcomeEmail({
       email,
       name: body.name,
-      stage: body.stage,
+      typeKey: body.typeKey,
+      regulationScore: body.regulationScore,
     });
-    return NextResponse.json({ ok: true, stored: false });
   }
 
-  const { error } = await supabase.from("leads").insert({
-    email,
-    name: body.name ?? null,
-    type_key: body.typeKey ?? null,
-    regulation_score: body.regulationScore ?? null,
-    wired: body.wired ?? null,
-    shutdown: body.shutdown ?? null,
-    plan_interest: body.planInterest ?? null,
-    stage: body.stage ?? null,
-    source: "quiz",
-  });
-
-  if (error) {
-    console.error("[lead] insert error:", error.message);
-    return NextResponse.json({ ok: false, error: "db" }, { status: 500 });
-  }
-
-  return NextResponse.json({ ok: true, stored: true });
+  return NextResponse.json({ ok: true, stored });
 }
