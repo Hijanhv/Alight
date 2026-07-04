@@ -189,18 +189,19 @@ export default function Home() {
             <span className="eyebrow">Simple pricing</span>
             <h2 className="display">Start free. Upgrade when it is working.</h2>
             <p className="measure">
-              Take the quiz and get your first reset free. Unlock your full
-              personalized plan whenever you are ready.
+              Take the quiz and get your first reset free. Every paid plan starts
+              with a 7-day free trial — unlock your full personalized plan whenever
+              you are ready.
             </p>
           </div>
           <div className="prices">
             <div className="price">
               <h3>Monthly</h3>
-              <div className="amt">$9.99<small> /month</small></div>
+              <div className="amt">$6.99<small> /month</small></div>
               <ul>
+                <li>7-day free trial</li>
                 <li>Your full personalized plan</li>
                 <li>State-matched daily resets</li>
-                <li>Regulation Score tracking</li>
                 <li>Cancel anytime</li>
               </ul>
               <Link href="/quiz" className="btn btn-ghost btn-block">Start with the quiz</Link>
@@ -208,23 +209,23 @@ export default function Home() {
             <div className="price featured">
               <span className="price-tag">Best value</span>
               <h3>Annual</h3>
-              <div className="amt">$79<small> /year</small></div>
+              <div className="amt">$49<small> /year</small></div>
               <ul>
+                <li>7-day free trial</li>
+                <li>Just about $4 / month</li>
                 <li>Everything in Monthly</li>
-                <li>Two months free vs monthly</li>
                 <li>Seasonal deep-reset programs</li>
-                <li>Priority new features</li>
               </ul>
               <Link href="/quiz" className="btn btn-primary btn-block">Start with the quiz</Link>
             </div>
             <div className="price">
               <h3>Lifetime</h3>
-              <div className="amt">$149<small> once</small></div>
+              <div className="amt">$99<small> once</small></div>
               <ul>
                 <li>Everything, forever</li>
                 <li>One payment, no renewals</li>
                 <li>All future updates included</li>
-                <li>Launch-week price</li>
+                <li>Launch price (normally $149)</li>
               </ul>
               <Link href="/quiz" className="btn btn-ghost btn-block">Start with the quiz</Link>
             </div>

@@ -300,9 +300,9 @@ function Result({
   const dash = (shown / 100) * circ;
 
   const plans = [
-    { key: "monthly", t: "Monthly", p: "$9.99" },
-    { key: "annual", t: "Annual", p: "$79" },
-    { key: "lifetime", t: "Lifetime", p: "$149" },
+    { key: "monthly", t: "Monthly", p: "$6.99" },
+    { key: "annual", t: "Annual", p: "$49" },
+    { key: "lifetime", t: "Lifetime", p: "$99" },
   ];
 
   return (
