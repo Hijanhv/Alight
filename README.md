@@ -15,7 +15,8 @@ help you leave survival mode and take one small first action.
 
 - **Next.js** (App Router, TypeScript) — landing, quiz, PWA, serverless API — deploys free on Vercel
 - Custom CSS design system (no framework) — warm "first light" palette, light + dark
-- _Planned:_ Supabase (auth + leads), Dodo Payments (Merchant of Record), Gemini free tier for AI narrative
+- Supabase — quiz lead capture · Vercel Web Analytics — visitors & pageviews
+- _Deferred until there are users:_ payments (free during early access) + Gemini AI narrative
 
 ## Develop
 

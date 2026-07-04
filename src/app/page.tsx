@@ -199,49 +199,18 @@ export default function Home() {
       <section className="section band" id="pricing">
         <div className="container">
           <div className="sec-head">
-            <span className="eyebrow">Simple pricing</span>
-            <h2 className="display">Start free. Upgrade when it is working.</h2>
+            <span className="eyebrow">Early access</span>
+            <h2 className="display">Free while we are in early access.</h2>
             <p className="measure">
-              Take the quiz and get your first reset free. Every paid plan starts
-              with a 7-day free trial — unlock your full personalized plan whenever
-              you are ready.
+              Alight is free right now — take the quiz, learn your nervous-system
+              type, and start regulating today. No card, no catch. Paid plans will
+              come later, once the full daily loop is ready.
             </p>
           </div>
-          <div className="prices">
-            <div className="price">
-              <h3>Monthly</h3>
-              <div className="amt">$6.99<small> /month</small></div>
-              <ul>
-                <li>7-day free trial</li>
-                <li>Your full personalized plan</li>
-                <li>State-matched daily resets</li>
-                <li>Cancel anytime</li>
-              </ul>
-              <Link href="/quiz" className="btn btn-ghost btn-block">Start with the quiz</Link>
-            </div>
-            <div className="price featured">
-              <span className="price-tag">Best value</span>
-              <h3>Annual</h3>
-              <div className="amt">$49<small> /year</small></div>
-              <ul>
-                <li>7-day free trial</li>
-                <li>Just about $4 / month</li>
-                <li>Everything in Monthly</li>
-                <li>Seasonal deep-reset programs</li>
-              </ul>
-              <Link href="/quiz" className="btn btn-primary btn-block">Start with the quiz</Link>
-            </div>
-            <div className="price">
-              <h3>Lifetime</h3>
-              <div className="amt">$99<small> once</small></div>
-              <ul>
-                <li>Everything, forever</li>
-                <li>One payment, no renewals</li>
-                <li>All future updates included</li>
-                <li>Launch price (normally $149)</li>
-              </ul>
-              <Link href="/quiz" className="btn btn-ghost btn-block">Start with the quiz</Link>
-            </div>
+          <div className="hero-cta" style={{ marginTop: 28 }}>
+            <Link href="/quiz" className="btn btn-primary btn-lg">
+              Start free — take the quiz
+            </Link>
           </div>
         </div>
       </section>

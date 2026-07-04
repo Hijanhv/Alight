@@ -49,8 +49,6 @@ export default function Quiz() {
   const [name, setName] = useState("");
   const [result, setResult] = useState<ScoreResult | null>(null);
   const [submitted, setSubmitted] = useState(false);
-  const [chosenPlan, setChosenPlan] = useState("annual");
-  const [busy, setBusy] = useState(false);
   const advancing = useRef(false);
 
   const total = allQuestions.length;
@@ -89,34 +87,15 @@ export default function Quiz() {
     setPhase("result");
   }
 
-  // Start Dodo checkout; if payments aren't live yet, fall back to early-access capture.
-  async function getAccess() {
-    if (busy) return;
-    setBusy(true);
-    try {
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: chosenPlan, email, name }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (data?.ok && data.url) {
-        window.location.href = data.url as string;
-        return;
-      }
-    } catch {
-      /* fall through to early access */
-    }
+  function join() {
     saveLead({
       email,
       name,
       stage: "early_access",
-      planInterest: chosenPlan,
       typeKey: result?.type.key,
       regulationScore: result?.regulationScore,
     });
     setSubmitted(true);
-    setBusy(false);
   }
 
   const progress =
@@ -268,10 +247,7 @@ export default function Quiz() {
               result={result}
               name={name}
               submitted={submitted}
-              busy={busy}
-              onGetAccess={getAccess}
-              chosenPlan={chosenPlan}
-              setChosenPlan={setChosenPlan}
+              onJoin={join}
             />
           )}
         </div>
@@ -284,18 +260,12 @@ function Result({
   result,
   name,
   submitted,
-  busy,
-  onGetAccess,
-  chosenPlan,
-  setChosenPlan,
+  onJoin,
 }: {
   result: ScoreResult;
   name: string;
   submitted: boolean;
-  busy: boolean;
-  onGetAccess: () => void;
-  chosenPlan: string;
-  setChosenPlan: (p: string) => void;
+  onJoin: () => void;
 }) {
   const [shown, setShown] = useState(0);
   const target = result.regulationScore;
@@ -322,12 +292,6 @@ function Result({
   const t = result.type;
   const circ = 2 * Math.PI * 52;
   const dash = (shown / 100) * circ;
-
-  const plans = [
-    { key: "monthly", t: "Monthly", p: "$6.99" },
-    { key: "annual", t: "Annual", p: "$49" },
-    { key: "lifetime", t: "Lifetime", p: "$99" },
-  ];
 
   return (
     <div className="q-enter" style={{ marginTop: 26 }}>
@@ -378,52 +342,30 @@ function Result({
       </div>
 
       <div className="locked">
-        <h4>Unlock your full Alight plan</h4>
+        <h4>Your full Alight plan is coming</h4>
         <ul>
           {t.planFocus.map((f, i) => (
             <li key={i}>{f}</li>
           ))}
           <li>Daily Regulate → Initiate → Win loop, matched to your state</li>
         </ul>
-
-        <div className="plan-mini">
-          {plans.map((p) => (
-            <button
-              key={p.key}
-              className={chosenPlan === p.key ? "best" : ""}
-              onClick={() => setChosenPlan(p.key)}
-              type="button"
-            >
-              <div className="t">{p.t}</div>
-              <div className="p">{p.p}</div>
-            </button>
-          ))}
-        </div>
-
         {submitted ? (
           <p style={{ marginTop: 20, color: "var(--primary-strong)", fontWeight: 600 }}>
-            You are on the early-access list. We will email your plan link the
-            moment it opens. ✦
+            You are on the early-access list. We will email you the moment your
+            full plan is ready. ✦
           </p>
         ) : (
           <button
             className="btn btn-primary btn-block btn-lg"
             style={{ marginTop: 20 }}
-            onClick={onGetAccess}
-            disabled={busy}
+            onClick={onJoin}
             type="button"
           >
-            {busy
-              ? "Starting…"
-              : chosenPlan === "lifetime"
-              ? "Get lifetime access"
-              : "Start 7-day free trial"}
+            Join the early access — it is free
           </button>
         )}
         <p className="fineprint">
-          {chosenPlan === "lifetime"
-            ? "One payment, yours forever. Secure checkout by Dodo Payments."
-            : "7-day free trial, then billed. Cancel anytime. Secure checkout by Dodo Payments."}
+          Alight is completely free during early access. No card needed.
         </p>
       </div>
 
