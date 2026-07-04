@@ -20,6 +20,7 @@ export default function SiteFooter() {
             <a href="/#science">The science</a>
             <a href="/#how">How it works</a>
             <Link href="/app">Open the app</Link>
+            <Link href="/friends">Talk to Lily &amp; John</Link>
             <Link href="/quiz">Take the quiz</Link>
           </nav>
         </div>

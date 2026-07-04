@@ -125,6 +125,11 @@ export default function DailyLoop() {
                   </button>
                 </>
               )}
+              <p style={{ marginTop: 22, textAlign: "center" }}>
+                <Link href="/friends" className="chat-friend-link">
+                  Need to talk? Chat with Lily or John →
+                </Link>
+              </p>
             </div>
           )}
 
