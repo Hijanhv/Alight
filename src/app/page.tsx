@@ -73,6 +73,45 @@ export default function Home() {
         </div>
       </section>
 
+      {/* THESIS / MANIFESTO */}
+      <section className="section thesis band" id="thesis">
+        <div className="container">
+          <span className="eyebrow">The thesis</span>
+          <h2 className="display">You were never lazy. You were overloaded.</h2>
+          <div className="inner">
+            <p>
+              If you have downloaded every planner, tried the 5am routine, and
+              still cannot start — the problem was never your discipline.
+            </p>
+            <p>
+              Procrastination is what a stressed nervous system does. Under enough
+              pressure — anxiety, burnout, a chaotic home, money worries, old
+              wounds, simply too much on your plate — your brain stops seeing a
+              task and starts seeing a threat. And when something feels like a
+              threat, the oldest part of you does the safest thing it knows: it
+              avoids.
+            </p>
+          </div>
+          <ul className="relatable">
+            <li>It is why you can show up for everyone else, but freeze on your own goals.</li>
+            <li>It is why rest leaves you guilty instead of restored.</li>
+            <li>It is why the important message sits unopened for a week.</li>
+            <li>It is why you feel exhausted and wired, busy and stuck, all at once.</li>
+          </ul>
+          <div className="inner">
+            <p className="close">
+              None of that is a character flaw. It is your mental health, your
+              circumstances, and a nervous system that has been carrying too much
+              for too long. Once you see procrastination for what it really is,
+              everything you have been blaming yourself for finally makes sense.
+            </p>
+          </div>
+          <Link href="/quiz" className="btn btn-ghost thesis-cta">
+            See what is really going on →
+          </Link>
+        </div>
+      </section>
+
       {/* REFRAME / SCIENCE */}
       <section className="section" id="science">
         <div className="container">
