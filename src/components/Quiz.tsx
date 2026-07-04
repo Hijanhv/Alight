@@ -50,6 +50,7 @@ export default function Quiz() {
   const [result, setResult] = useState<ScoreResult | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [chosenPlan, setChosenPlan] = useState("annual");
+  const [busy, setBusy] = useState(false);
   const advancing = useRef(false);
 
   const total = allQuestions.length;
@@ -86,6 +87,36 @@ export default function Quiz() {
       shutdown: r.shutdown,
     });
     setPhase("result");
+  }
+
+  // Start Dodo checkout; if payments aren't live yet, fall back to early-access capture.
+  async function getAccess() {
+    if (busy) return;
+    setBusy(true);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: chosenPlan, email, name }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (data?.ok && data.url) {
+        window.location.href = data.url as string;
+        return;
+      }
+    } catch {
+      /* fall through to early access */
+    }
+    saveLead({
+      email,
+      name,
+      stage: "early_access",
+      planInterest: chosenPlan,
+      typeKey: result?.type.key,
+      regulationScore: result?.regulationScore,
+    });
+    setSubmitted(true);
+    setBusy(false);
   }
 
   const progress =
@@ -237,17 +268,8 @@ export default function Quiz() {
               result={result}
               name={name}
               submitted={submitted}
-              onEarlyAccess={() => {
-                setSubmitted(true);
-                saveLead({
-                  email,
-                  name,
-                  stage: "early_access",
-                  planInterest: chosenPlan,
-                  typeKey: result?.type.key,
-                  regulationScore: result?.regulationScore,
-                });
-              }}
+              busy={busy}
+              onGetAccess={getAccess}
               chosenPlan={chosenPlan}
               setChosenPlan={setChosenPlan}
             />
@@ -262,14 +284,16 @@ function Result({
   result,
   name,
   submitted,
-  onEarlyAccess,
+  busy,
+  onGetAccess,
   chosenPlan,
   setChosenPlan,
 }: {
   result: ScoreResult;
   name: string;
   submitted: boolean;
-  onEarlyAccess: () => void;
+  busy: boolean;
+  onGetAccess: () => void;
   chosenPlan: string;
   setChosenPlan: (p: string) => void;
 }) {
@@ -385,14 +409,21 @@ function Result({
           <button
             className="btn btn-primary btn-block btn-lg"
             style={{ marginTop: 20 }}
-            onClick={onEarlyAccess}
+            onClick={onGetAccess}
+            disabled={busy}
             type="button"
           >
-            Get early access
+            {busy
+              ? "Starting…"
+              : chosenPlan === "lifetime"
+              ? "Get lifetime access"
+              : "Start 7-day free trial"}
           </button>
         )}
         <p className="fineprint">
-          Alight is in early access — reserve your spot now, pay nothing today.
+          {chosenPlan === "lifetime"
+            ? "One payment, yours forever. Secure checkout by Dodo Payments."
+            : "7-day free trial, then billed. Cancel anytime. Secure checkout by Dodo Payments."}
         </p>
       </div>
 
