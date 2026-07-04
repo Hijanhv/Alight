@@ -19,7 +19,7 @@ export default function SiteFooter() {
           <nav className="stack" style={{ gap: 10 }} aria-label="Footer">
             <a href="/#science">The science</a>
             <a href="/#how">How it works</a>
-            <a href="/#pricing">Pricing</a>
+            <Link href="/app">Open the app</Link>
             <Link href="/quiz">Take the quiz</Link>
           </nav>
         </div>

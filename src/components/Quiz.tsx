@@ -9,6 +9,7 @@ import {
   scoreQuiz,
   type ScoreResult,
 } from "@/lib/quiz-data";
+import { saveProfile } from "@/lib/progress";
 
 type Phase = "intro" | "quiz" | "email" | "result";
 
@@ -48,7 +49,6 @@ export default function Quiz() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [result, setResult] = useState<ScoreResult | null>(null);
-  const [submitted, setSubmitted] = useState(false);
   const advancing = useRef(false);
 
   const total = allQuestions.length;
@@ -75,6 +75,12 @@ export default function Quiz() {
     e.preventDefault();
     const r = scoreQuiz(answers);
     setResult(r);
+    saveProfile({
+      typeKey: r.type.key,
+      name,
+      regulationScore: r.regulationScore,
+      createdAt: new Date().toISOString(),
+    });
     saveLead({
       email,
       name,
@@ -85,17 +91,6 @@ export default function Quiz() {
       shutdown: r.shutdown,
     });
     setPhase("result");
-  }
-
-  function join() {
-    saveLead({
-      email,
-      name,
-      stage: "early_access",
-      typeKey: result?.type.key,
-      regulationScore: result?.regulationScore,
-    });
-    setSubmitted(true);
   }
 
   const progress =
@@ -243,12 +238,7 @@ export default function Quiz() {
           )}
 
           {phase === "result" && result && (
-            <Result
-              result={result}
-              name={name}
-              submitted={submitted}
-              onJoin={join}
-            />
+            <Result result={result} name={name} />
           )}
         </div>
       </main>
@@ -256,17 +246,7 @@ export default function Quiz() {
   );
 }
 
-function Result({
-  result,
-  name,
-  submitted,
-  onJoin,
-}: {
-  result: ScoreResult;
-  name: string;
-  submitted: boolean;
-  onJoin: () => void;
-}) {
+function Result({ result, name }: { result: ScoreResult; name: string }) {
   const [shown, setShown] = useState(0);
   const target = result.regulationScore;
 
@@ -342,30 +322,22 @@ function Result({
       </div>
 
       <div className="locked">
-        <h4>Your full Alight plan is coming</h4>
+        <h4>Your daily loop is ready</h4>
         <ul>
           {t.planFocus.map((f, i) => (
             <li key={i}>{f}</li>
           ))}
-          <li>Daily Regulate → Initiate → Win loop, matched to your state</li>
+          <li>Daily Regulate → Initiate → Win, matched to your state</li>
         </ul>
-        {submitted ? (
-          <p style={{ marginTop: 20, color: "var(--primary-strong)", fontWeight: 600 }}>
-            You are on the early-access list. We will email you the moment your
-            full plan is ready. ✦
-          </p>
-        ) : (
-          <button
-            className="btn btn-primary btn-block btn-lg"
-            style={{ marginTop: 20 }}
-            onClick={onJoin}
-            type="button"
-          >
-            Join the early access — it is free
-          </button>
-        )}
+        <Link
+          href="/app"
+          className="btn btn-primary btn-block btn-lg"
+          style={{ marginTop: 20 }}
+        >
+          Start my first reset →
+        </Link>
         <p className="fineprint">
-          Alight is completely free during early access. No card needed.
+          Free during early access. Add it to your home screen — no app store needed.
         </p>
       </div>
 

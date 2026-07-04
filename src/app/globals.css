@@ -378,3 +378,14 @@ h3.display { font-size: clamp(1.35rem, 2.4vw, 1.7rem); line-height: 1.15; }
 .plan-mini .best { border-color: var(--primary); background: var(--primary-tint); }
 .plan-mini .t { font-size: 0.82rem; color: var(--muted); }
 .plan-mini .p { font-family: var(--font-display); font-weight: 600; font-size: 1.35rem; margin-top: 4px; }
+
+/* daily loop (app) */
+.stat-row { display: flex; gap: 12px; margin-top: 24px; }
+.stat { flex: 1; padding: 16px 12px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); text-align: center; }
+.stat .n { font-family: var(--font-display); font-weight: 600; font-size: 1.9rem; line-height: 1; }
+.stat .l { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+.suggest { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.suggest button { padding: 0.55em 0.9em; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink-soft); font-size: 0.92rem; cursor: pointer; transition: border-color .15s ease, color .15s ease; }
+.suggest button:hover { border-color: var(--primary); color: var(--primary); }
+.step-list { margin: 14px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 9px; color: var(--ink-soft); }
+.step-list li { line-height: 1.5; }
