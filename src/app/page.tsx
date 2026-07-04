@@ -73,6 +73,19 @@ export default function Home() {
         </div>
       </section>
 
+      {/* CREDIBILITY STRIP */}
+      <div className="cred">
+        <div className="container cred-inner">
+          <span>Built on <b>polyvagal theory</b></span>
+          <span className="sep">·</span>
+          <span><b>Somatic</b> resets, not meditation timers</span>
+          <span className="sep">·</span>
+          <span><b>2 minutes</b> a day</span>
+          <span className="sep">·</span>
+          <span>Works on <b>iPhone &amp; Android</b></span>
+        </div>
+      </div>
+
       {/* THESIS / MANIFESTO */}
       <section className="section thesis band" id="thesis">
         <div className="container">

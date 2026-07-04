@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Figtree } from "next/font/google";
 import "./globals.css";
 import PWARegister from "@/components/PWARegister";
+import ScrollReveal from "@/components/ScrollReveal";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -74,6 +75,7 @@ export default function RootLayout({
       <body>
         {children}
         <PWARegister />
+        <ScrollReveal />
       </body>
     </html>
   );
