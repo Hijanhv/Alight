@@ -1,7 +1,8 @@
 // Alight service worker — makes the app installable and resilient offline.
-const CACHE = "alight-v1";
+const CACHE = "alight-v2";
 const SHELL = [
   "/",
+  "/app",
   "/quiz",
   "/manifest.webmanifest",
   "/icon.svg",
