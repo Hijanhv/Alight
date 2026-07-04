@@ -1,11 +1,20 @@
 // On-device progress for the daily loop (no account needed).
 // Everything lives in localStorage so it works offline as a PWA and costs $0.
 
+export interface QuizContext {
+  childhood?: string;
+  currentStress?: string;
+  circumstances?: string[];
+}
+
 export interface Profile {
   typeKey?: string;
   name?: string;
   regulationScore?: number;
   createdAt?: string;
+  gender?: string;
+  age?: number;
+  context?: QuizContext;
 }
 
 export interface Session {

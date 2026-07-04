@@ -14,6 +14,9 @@ interface LeadBody {
   shutdown?: number;
   planInterest?: string;
   stage?: string;
+  gender?: string;
+  age?: number;
+  context?: Record<string, unknown>;
 }
 
 export async function POST(req: Request) {
@@ -42,6 +45,9 @@ export async function POST(req: Request) {
       shutdown: body.shutdown ?? null,
       plan_interest: body.planInterest ?? null,
       stage: body.stage ?? null,
+      gender: body.gender ?? null,
+      age: typeof body.age === "number" ? body.age : null,
+      context: body.context ?? null,
       source: "quiz",
     });
     if (error) console.error("[lead] insert error:", error.message);

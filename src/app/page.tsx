@@ -218,7 +218,7 @@ export default function Home() {
       {/* FINAL CTA */}
       <section className="section cta-band">
         <div className="container">
-          <span className="eyebrow">2 minutes, 18 questions</span>
+          <span className="eyebrow">2 minutes, honest questions</span>
           <h2 className="display" style={{ marginTop: 14 }}>
             Find out what is really behind your procrastination.
           </h2>

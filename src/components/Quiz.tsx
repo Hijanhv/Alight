@@ -4,14 +4,26 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import BrandMark from "./BrandMark";
 import {
-  allQuestions,
-  sections,
+  statements,
+  genderQuestion,
+  childhoodQuestion,
+  currentStressQuestion,
+  circumstanceQuestion,
   scoreQuiz,
+  type Choice,
   type ScoreResult,
 } from "@/lib/quiz-data";
 import { saveProfile } from "@/lib/progress";
 
-type Phase = "intro" | "quiz" | "email" | "result";
+type Phase =
+  | "intro"
+  | "gender"
+  | "quiz"
+  | "childhood"
+  | "current"
+  | "circumstances"
+  | "details"
+  | "result";
 
 const OPTIONS = [
   { v: 2, label: "Yes, often", mark: "●" },
@@ -33,53 +45,74 @@ function saveLead(payload: Record<string, unknown>) {
   }
 }
 
-function sectionOf(index: number) {
-  let n = 0;
-  for (const s of sections) {
-    if (index < n + s.questions.length) return s.title;
-    n += s.questions.length;
-  }
-  return sections[sections.length - 1].title;
-}
-
 export default function Quiz() {
   const [phase, setPhase] = useState<Phase>("intro");
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
-  const [email, setEmail] = useState("");
+  const [gender, setGender] = useState("");
+  const [childhood, setChildhood] = useState("");
+  const [currentStress, setCurrentStress] = useState("");
+  const [circumstances, setCircumstances] = useState<string[]>([]);
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [age, setAge] = useState("");
   const [result, setResult] = useState<ScoreResult | null>(null);
   const advancing = useRef(false);
 
-  const total = allQuestions.length;
-  const current = allQuestions[index];
+  const total = statements.length;
+  const current = statements[index];
 
-  function pick(v: number) {
+  // Advance a single-select screen after a brief highlight beat.
+  function advance(next: () => void) {
     if (advancing.current) return;
     advancing.current = true;
-    setAnswers((a) => ({ ...a, [current.id]: v }));
-    const last = index === total - 1;
     window.setTimeout(() => {
-      if (last) setPhase("email");
-      else setIndex((i) => i + 1);
+      next();
       advancing.current = false;
     }, 240);
   }
 
-  function back() {
-    if (index === 0) setPhase("intro");
-    else setIndex((i) => i - 1);
+  function pickStatement(v: number) {
+    setAnswers((a) => ({ ...a, [current.id]: v }));
+    const last = index === total - 1;
+    advance(() => (last ? setPhase("childhood") : setIndex((i) => i + 1)));
   }
 
-  function submitEmail(e: React.FormEvent) {
+  function back() {
+    if (phase === "gender") setPhase("intro");
+    else if (phase === "quiz") {
+      if (index === 0) setPhase("gender");
+      else setIndex((i) => i - 1);
+    } else if (phase === "childhood") setPhase("quiz");
+    else if (phase === "current") setPhase("childhood");
+    else if (phase === "circumstances") setPhase("current");
+    else if (phase === "details") setPhase("circumstances");
+  }
+
+  function toggleCircumstance(value: string) {
+    setCircumstances((prev) => {
+      if (value === "none") return prev.includes("none") ? [] : ["none"];
+      const without = prev.filter((v) => v !== "none");
+      return without.includes(value)
+        ? without.filter((v) => v !== value)
+        : [...without, value];
+    });
+  }
+
+  function submitDetails(e: React.FormEvent) {
     e.preventDefault();
     const r = scoreQuiz(answers);
     setResult(r);
+    const ageNum = age.trim() ? Number(age) : undefined;
+    const context = { childhood, currentStress, circumstances };
     saveProfile({
       typeKey: r.type.key,
       name,
       regulationScore: r.regulationScore,
       createdAt: new Date().toISOString(),
+      gender: gender || undefined,
+      age: Number.isFinite(ageNum) ? ageNum : undefined,
+      context,
     });
     saveLead({
       email,
@@ -89,18 +122,42 @@ export default function Quiz() {
       regulationScore: r.regulationScore,
       wired: r.wired,
       shutdown: r.shutdown,
+      gender: gender || undefined,
+      age: Number.isFinite(ageNum) ? ageNum : undefined,
+      context,
     });
     setPhase("result");
   }
 
   const progress =
-    phase === "quiz"
-      ? (index / total) * 100
-      : phase === "email"
-      ? 100
+    phase === "gender"
+      ? 4
+      : phase === "quiz"
+      ? 6 + (index / total) * 74
+      : phase === "childhood"
+      ? 84
+      : phase === "current"
+      ? 88
+      : phase === "circumstances"
+      ? 92
+      : phase === "details"
+      ? 97
       : phase === "result"
       ? 100
       : 0;
+
+  const stepLabel =
+    phase === "quiz"
+      ? "About you right now"
+      : phase === "gender"
+      ? "Getting started"
+      : phase === "childhood" || phase === "current"
+      ? "A little background"
+      : phase === "circumstances"
+      ? "Your world right now"
+      : phase === "details"
+      ? "Almost there"
+      : "Your result";
 
   return (
     <div className="quiz-shell">
@@ -126,16 +183,8 @@ export default function Quiz() {
                 <i style={{ width: `${progress}%` }} />
               </div>
               <div className="progress-meta">
-                <span>
-                  {phase === "quiz"
-                    ? sectionOf(index)
-                    : phase === "email"
-                    ? "Almost there"
-                    : "Your result"}
-                </span>
-                <span>
-                  {phase === "quiz" ? `${index + 1} of ${total}` : ""}
-                </span>
+                <span>{stepLabel}</span>
+                <span>{phase === "quiz" ? `${index + 1} of ${total}` : ""}</span>
               </div>
             </>
           )}
@@ -150,17 +199,14 @@ export default function Quiz() {
                 What is really behind your procrastination?
               </h1>
               <p className="lede" style={{ margin: "18px auto 0", textAlign: "center" }}>
-                18 quick statements about your body, mind, and habits. In two
-                minutes you will get your nervous-system type and a reset you can
-                use right now — free.
+                A short, honest check-in about your body, mind, and daily
+                patterns. In about two minutes you will get your nervous-system
+                type and a reset you can use right now — free.
               </p>
               <button
                 className="btn btn-primary btn-lg"
                 style={{ marginTop: 30 }}
-                onClick={() => {
-                  setPhase("quiz");
-                  setIndex(0);
-                }}
+                onClick={() => setPhase("gender")}
               >
                 Start the check-in
               </button>
@@ -168,9 +214,33 @@ export default function Quiz() {
             </div>
           )}
 
+          {phase === "gender" && (
+            <div className="q-enter" style={{ marginTop: 30 }}>
+              <span className="q-section">{stepLabel}</span>
+              <p className="q-text">{genderQuestion.text}</p>
+              <div className="answers">
+                {genderQuestion.options.map((o) => (
+                  <button
+                    key={o.value}
+                    className={`answer${gender === o.value ? " sel" : ""}`}
+                    onClick={() => {
+                      setGender(o.value);
+                      advance(() => setPhase("quiz"));
+                    }}
+                  >
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+              <div className="q-nav">
+                <button className="link-btn" onClick={back}>← Back</button>
+              </div>
+            </div>
+          )}
+
           {phase === "quiz" && current && (
             <div className="q-enter" key={current.id} style={{ marginTop: 30 }}>
-              <span className="q-section">{sectionOf(index)}</span>
+              <span className="q-section">How true does this feel lately?</span>
               <p className="q-text">{current.text}</p>
               <div className="answers">
                 {OPTIONS.map((o) => (
@@ -178,7 +248,7 @@ export default function Quiz() {
                     key={o.v}
                     className={`answer${answers[current.id] === o.v ? " sel" : ""}`}
                     data-v={o.v}
-                    onClick={() => pick(o.v)}
+                    onClick={() => pickStatement(o.v)}
                   >
                     <span className="ico" aria-hidden="true">{o.mark}</span>
                     {o.label}
@@ -186,9 +256,7 @@ export default function Quiz() {
                 ))}
               </div>
               <div className="q-nav">
-                <button className="link-btn" onClick={back}>
-                  ← Back
-                </button>
+                <button className="link-btn" onClick={back}>← Back</button>
                 <span className="muted" style={{ fontSize: "0.85rem" }}>
                   Answer honestly — there are no wrong answers
                 </span>
@@ -196,9 +264,68 @@ export default function Quiz() {
             </div>
           )}
 
-          {phase === "email" && (
-            <form className="q-enter" style={{ marginTop: 30 }} onSubmit={submitEmail}>
-              <span className="q-section">Last step</span>
+          {phase === "childhood" && (
+            <ContextSingle
+              q={childhoodQuestion}
+              value={childhood}
+              onPick={(v) => {
+                setChildhood(v);
+                advance(() => setPhase("current"));
+              }}
+              onBack={back}
+            />
+          )}
+
+          {phase === "current" && (
+            <ContextSingle
+              q={currentStressQuestion}
+              value={currentStress}
+              onPick={(v) => {
+                setCurrentStress(v);
+                advance(() => setPhase("circumstances"));
+              }}
+              onBack={back}
+            />
+          )}
+
+          {phase === "circumstances" && (
+            <div className="q-enter" style={{ marginTop: 30 }}>
+              <span className="q-section">{stepLabel}</span>
+              <p className="q-text">{circumstanceQuestion.text}</p>
+              {circumstanceQuestion.help && (
+                <p className="muted" style={{ marginTop: 10 }}>{circumstanceQuestion.help}</p>
+              )}
+              <div className="answers" style={{ marginTop: 18 }}>
+                {circumstanceQuestion.options.map((o) => {
+                  const sel = circumstances.includes(o.value);
+                  return (
+                    <button
+                      key={o.value}
+                      className={`answer${sel ? " sel" : ""}`}
+                      onClick={() => toggleCircumstance(o.value)}
+                    >
+                      <span className="ico" aria-hidden="true">{sel ? "✓" : "○"}</span>
+                      {o.label}
+                    </button>
+                  );
+                })}
+              </div>
+              <button
+                className="btn btn-primary btn-block btn-lg"
+                style={{ marginTop: 22 }}
+                onClick={() => setPhase("details")}
+              >
+                Continue
+              </button>
+              <div className="q-nav">
+                <button className="link-btn" onClick={back}>← Back</button>
+              </div>
+            </div>
+          )}
+
+          {phase === "details" && (
+            <form className="q-enter" style={{ marginTop: 30 }} onSubmit={submitDetails}>
+              <span className="q-section">{stepLabel}</span>
               <p className="q-text">Where should we send your results?</p>
               <p className="muted" style={{ marginTop: 12 }}>
                 See your nervous-system type and first reset instantly. We will
@@ -216,6 +343,19 @@ export default function Quiz() {
                 />
               </div>
               <div className="field">
+                <label htmlFor="age">Age</label>
+                <input
+                  id="age"
+                  type="number"
+                  inputMode="numeric"
+                  min={13}
+                  max={120}
+                  placeholder="Optional"
+                  value={age}
+                  onChange={(e) => setAge(e.target.value)}
+                />
+              </div>
+              <div className="field">
                 <label htmlFor="email">Email</label>
                 <input
                   id="email"
@@ -230,6 +370,9 @@ export default function Quiz() {
               <button className="btn btn-primary btn-block btn-lg" style={{ marginTop: 22 }} type="submit">
                 Show my result
               </button>
+              <div className="q-nav">
+                <button type="button" className="link-btn" onClick={back}>← Back</button>
+              </div>
               <p className="fineprint">
                 No spam. Unsubscribe anytime. Alight is a wellbeing tool, not
                 medical advice.
@@ -242,6 +385,40 @@ export default function Quiz() {
           )}
         </div>
       </main>
+    </div>
+  );
+}
+
+function ContextSingle({
+  q,
+  value,
+  onPick,
+  onBack,
+}: {
+  q: { text: string; help?: string; options: Choice[] };
+  value: string;
+  onPick: (v: string) => void;
+  onBack: () => void;
+}) {
+  return (
+    <div className="q-enter" style={{ marginTop: 30 }}>
+      <span className="q-section">A little background</span>
+      <p className="q-text">{q.text}</p>
+      {q.help && <p className="muted" style={{ marginTop: 10 }}>{q.help}</p>}
+      <div className="answers" style={{ marginTop: 18 }}>
+        {q.options.map((o) => (
+          <button
+            key={o.value}
+            className={`answer${value === o.value ? " sel" : ""}`}
+            onClick={() => onPick(o.value)}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
+      <div className="q-nav">
+        <button className="link-btn" onClick={onBack}>← Back</button>
+      </div>
     </div>
   );
 }
