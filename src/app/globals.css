@@ -5,32 +5,33 @@
    ============================================================ */
 
 :root {
-  /* light theme — "first light" */
-  --ground:        #FAF6F0;
-  --ground-2:      #F2EADE;
+  color-scheme: light;
+  /* bright, clean, always-light — mint-teal + lavender + amber on near-white */
+  --ground:        #F5F9F8;
+  --ground-2:      #EAF2F0;
   --surface:       #FFFFFF;
-  --surface-2:     #FBF7F1;
+  --surface-2:     #F7FBFA;
 
-  --ink:           #17211D;
-  --ink-soft:      #3C4843;
-  --muted:         #6C7B73;
-  --line:          #E8DFD1;
-  --line-strong:   #DCD0BD;
+  --ink:           #12211D;
+  --ink-soft:      #45544E;
+  --muted:         #7B8983;
+  --line:          #E6ECEA;
+  --line-strong:   #D2DBD8;
 
-  --primary:       #157567;
-  --primary-strong:#0E5A4F;
-  --primary-tint:  #E3F0EC;
+  --primary:       #11B39A;   /* bright mint-teal */
+  --primary-strong:#0E9C86;
+  --primary-tint:  #DCF5F0;
 
-  --glow:          #DE8E27;   /* the amber "light" / agency accent */
-  --glow-strong:   #C4771A;
-  --glow-tint:     #F8E7CC;
+  --glow:          #F5A623;   /* bright amber — achievement */
+  --glow-strong:   #DE8C0C;
+  --glow-tint:     #FDEDCC;
 
-  --support:       #7A73C7;   /* muted lavender */
-  --support-tint:  #ECEAF8;
+  --support:       #8E8DF2;   /* bright lavender — support */
+  --support-tint:  #ECEBFC;
 
-  --shadow-sm: 0 1px 2px rgba(23,33,29,0.05), 0 1px 3px rgba(23,33,29,0.06);
-  --shadow-md: 0 8px 24px -12px rgba(23,33,29,0.18), 0 2px 6px rgba(23,33,29,0.05);
-  --shadow-lg: 0 30px 60px -30px rgba(23,33,29,0.30), 0 8px 20px -12px rgba(23,33,29,0.14);
+  --shadow-sm: 0 1px 2px rgba(16,32,28,0.04), 0 1px 3px rgba(16,32,28,0.05);
+  --shadow-md: 0 10px 28px -14px rgba(16,32,28,0.13), 0 2px 6px rgba(16,32,28,0.04);
+  --shadow-lg: 0 30px 60px -30px rgba(16,32,28,0.18), 0 8px 20px -12px rgba(16,32,28,0.09);
 
   --font-display: var(--font-fraunces), "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   --font-sans: var(--font-figtree), -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
@@ -39,52 +40,6 @@
   --radius: 18px;
   --radius-sm: 12px;
   --radius-lg: 28px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --ground:        #0F1512;
-    --ground-2:      #131C18;
-    --surface:       #16211D;
-    --surface-2:     #1A2621;
-
-    --ink:           #ECF2EE;
-    --ink-soft:      #C7D2CC;
-    --muted:         #8EA098;
-    --line:          #263229;
-    --line-strong:   #33423A;
-
-    --primary:       #3DB39B;
-    --primary-strong:#5ECCB4;
-    --primary-tint:  #10281F;
-
-    --glow:          #EDB25A;
-    --glow-strong:   #F3C577;
-    --glow-tint:     #2C2314;
-
-    --support:       #A79FF0;
-    --support-tint:  #201E38;
-
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
-    --shadow-md: 0 10px 30px -14px rgba(0,0,0,0.6);
-    --shadow-lg: 0 34px 70px -34px rgba(0,0,0,0.75), 0 10px 24px -14px rgba(0,0,0,0.5);
-  }
-}
-
-/* explicit overrides so a future theme toggle wins over the media query */
-:root[data-theme="light"] {
-  --ground:#FAF6F0; --ground-2:#F2EADE; --surface:#FFFFFF; --surface-2:#FBF7F1;
-  --ink:#17211D; --ink-soft:#3C4843; --muted:#6C7B73; --line:#E8DFD1; --line-strong:#DCD0BD;
-  --primary:#157567; --primary-strong:#0E5A4F; --primary-tint:#E3F0EC;
-  --glow:#DE8E27; --glow-strong:#C4771A; --glow-tint:#F8E7CC;
-  --support:#7A73C7; --support-tint:#ECEAF8;
-}
-:root[data-theme="dark"] {
-  --ground:#0F1512; --ground-2:#131C18; --surface:#16211D; --surface-2:#1A2621;
-  --ink:#ECF2EE; --ink-soft:#C7D2CC; --muted:#8EA098; --line:#263229; --line-strong:#33423A;
-  --primary:#3DB39B; --primary-strong:#5ECCB4; --primary-tint:#10281F;
-  --glow:#EDB25A; --glow-strong:#F3C577; --glow-tint:#2C2314;
-  --support:#A79FF0; --support-tint:#201E38;
 }
 
 *, *::before, *::after { box-sizing: border-box; }

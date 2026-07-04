@@ -9,8 +9,8 @@
   "display_override": ["standalone", "minimal-ui"],
   "lang": "en",
   "dir": "ltr",
-  "background_color": "#FAF6F0",
-  "theme_color": "#FAF6F0",
+  "background_color": "#F5F9F8",
+  "theme_color": "#F5F9F8",
   "orientation": "portrait",
   "categories": ["health", "lifestyle", "productivity"],
   "icons": [
