@@ -62,7 +62,7 @@ async function callGemini(messages: LlmMessage[], key: string): Promise<LlmResul
       role: m.role === "assistant" ? "model" : "user",
       parts: [{ text: m.content }],
     }));
-  const model = process.env.GEMINI_MODEL || "gemini-1.5-flash";
+  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
     {
@@ -95,7 +95,8 @@ export interface EmbedResult {
 export async function embed(text: string): Promise<EmbedResult | null> {
   const key = process.env.GEMINI_API_KEY;
   if (!key || !text.trim()) return null;
-  const model = process.env.EMBEDDING_MODEL || "text-embedding-004";
+  const model = process.env.EMBEDDING_MODEL || "gemini-embedding-001";
+  const dims = Number(process.env.EMBEDDING_DIMS || 768); // must match session_memory vector(768)
   try {
     const res = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${model}:embedContent?key=${key}`,
@@ -105,6 +106,7 @@ export async function embed(text: string): Promise<EmbedResult | null> {
         body: JSON.stringify({
           model: `models/${model}`,
           content: { parts: [{ text: text.slice(0, 8000) }] },
+          outputDimensionality: dims,
         }),
       }
     );
