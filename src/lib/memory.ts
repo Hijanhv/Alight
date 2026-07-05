@@ -220,6 +220,22 @@ class CogneeMemory implements MemoryStore {
   }
 }
 
+// Hybrid: live chat reads from the fast primary store (instant), while every
+// write ALSO flows into the graph store so Cognee's knowledge graph keeps
+// building in the background — best of both, with no recall latency tax.
+class HybridMemory implements MemoryStore {
+  constructor(private primary: MemoryStore, private graph: MemoryStore) {}
+  recall(userId: string, query: string): Promise<string[]> {
+    return this.primary.recall(userId, query);
+  }
+  async remember(userId: string, turns: MemoryTurn[]): Promise<void> {
+    await Promise.allSettled([
+      this.primary.remember(userId, turns),
+      this.graph.remember(userId, turns),
+    ]);
+  }
+}
+
 let cached: MemoryStore | undefined;
 
 export function getMemory(): MemoryStore {
@@ -227,10 +243,12 @@ export function getMemory(): MemoryStore {
   const provider = (process.env.MEMORY_PROVIDER || "supabase").toLowerCase();
   const cogKey = process.env.COGNEE_API_KEY;
   if (provider === "cognee" && cogKey) {
-    cached = new CogneeMemory(
+    const cognee = new CogneeMemory(
       (process.env.COGNEE_BASE_URL || "https://api.cognee.ai").replace(/\/+$/, ""),
       cogKey
     );
+    // Instant Supabase reads for chat; Cognee graph built on writes.
+    cached = new HybridMemory(new SupabaseMemory(), cognee);
   } else {
     cached = new SupabaseMemory();
   }
