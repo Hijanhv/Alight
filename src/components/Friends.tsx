@@ -6,6 +6,7 @@ import BrandMark from "./BrandMark";
 import { FRIENDS, type FriendKey } from "@/lib/friends";
 import { loadChat, saveChat, clearChat, type ChatMsg } from "@/lib/chat-store";
 import { loadProfile } from "@/lib/progress";
+import { getUid } from "@/lib/uid";
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
@@ -66,6 +67,7 @@ export default function Friends() {
           friend,
           messages: next,
           profile: { name: profile?.name, typeKey: profile?.typeKey },
+          userId: getUid(),
         }),
       });
       const data = await res.json().catch(() => ({}));

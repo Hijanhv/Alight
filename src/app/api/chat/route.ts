@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { FRIENDS, isFriendKey } from "@/lib/friends";
 import { chatComplete, type LlmMessage } from "@/lib/llm";
+import { getMemory, type MemoryTurn } from "@/lib/memory";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -25,6 +26,7 @@ interface Body {
   friend?: string;
   messages?: { role?: string; content?: string }[];
   profile?: { typeKey?: string; name?: string };
+  userId?: string;
 }
 
 export async function POST(req: Request) {
@@ -37,6 +39,7 @@ export async function POST(req: Request) {
 
   const friend = isFriendKey(body.friend) ? body.friend : "lily";
   const persona = FRIENDS[friend];
+  const userId = typeof body.userId === "string" ? body.userId.slice(0, 64) : "";
 
   const history = (Array.isArray(body.messages) ? body.messages : [])
     .filter((m) => m && typeof m.content === "string" && m.content.trim())
@@ -50,20 +53,48 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "no message" }, { status: 400 });
   }
 
+  // Recall what we already know about this person (best-effort).
+  let memorySnippets: string[] = [];
+  if (userId) {
+    const lastUser = [...history].reverse().find((m) => m.role === "user");
+    try {
+      memorySnippets = await getMemory().recall(userId, lastUser?.content ?? "");
+    } catch {
+      /* memory is best-effort — never block a reply */
+    }
+  }
+
   let ctx = "";
   if (body.profile?.name) ctx += `The person's name is ${body.profile.name}. `;
   if (body.profile?.typeKey)
     ctx += `Their nervous-system pattern from the Alight quiz is "${body.profile.typeKey}". `;
+  if (memorySnippets.length)
+    ctx += `What you remember about them from past chats: ${memorySnippets.join(" ")} `;
 
   const messages: LlmMessage[] = [
     { role: "system", content: persona.system + (ctx ? `\n\nContext: ${ctx}` : "") },
     ...history,
   ];
 
-  const reply = await chatComplete(messages);
-  if (reply) return NextResponse.json({ reply, source: "ai" });
-
+  const aiReply = await chatComplete(messages);
   const pool = FALLBACKS[friend];
-  const fb = pool[Math.floor(Math.random() * pool.length)];
-  return NextResponse.json({ reply: fb, source: "fallback" });
+  const reply = aiReply ?? pool[Math.floor(Math.random() * pool.length)];
+  const source = aiReply ? "ai" : "fallback";
+
+  // Fold this exchange into long-term memory after the reply is sent, so the
+  // person never waits on it (Cognee will plug in here behind the same call).
+  if (userId) {
+    const turns: MemoryTurn[] = [
+      ...history.map(
+        (m): MemoryTurn => ({
+          role: m.role === "assistant" ? "assistant" : "user",
+          content: m.content,
+        })
+      ),
+      { role: "assistant" as const, content: reply },
+    ].slice(-8);
+    after(() => getMemory().remember(userId, turns).catch(() => {}));
+  }
+
+  return NextResponse.json({ reply, source });
 }
