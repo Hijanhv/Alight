@@ -140,12 +140,102 @@ function parseNotes(raw: string): { summary: string; facts: string[] } | null {
   }
 }
 
+// ---------- Cognee Cloud memory (knowledge-graph engine; opt-in) ----------
+// Runs on Cognee's managed API (free tier, 1M tokens/mo) — Vercel just calls it
+// over HTTPS, so nothing extra is self-hosted. Every call falls back to the
+// Supabase memory on error so the app never hard-breaks.
+function datasetFor(userId: string): string {
+  const safe = userId.replace(/[^a-zA-Z0-9_]/g, "").slice(0, 48) || "anon";
+  return `alight_${safe}`;
+}
+
+function extractSearchText(data: unknown): string {
+  if (!data) return "";
+  if (typeof data === "string") return data;
+  if (Array.isArray(data)) {
+    return data
+      .map((d) =>
+        typeof d === "string" ? d : d && typeof d === "object" ? JSON.stringify(d) : String(d)
+      )
+      .filter(Boolean)
+      .join(" ")
+      .slice(0, 1200);
+  }
+  if (typeof data === "object") {
+    const o = data as Record<string, unknown>;
+    for (const k of ["result", "results", "answer", "text", "completion", "search_results"]) {
+      if (o[k]) return extractSearchText(o[k]);
+    }
+  }
+  return "";
+}
+
+class CogneeMemory implements MemoryStore {
+  private fallback: MemoryStore = new SupabaseMemory();
+  constructor(private base: string, private key: string) {}
+
+  private headers() {
+    return { "Content-Type": "application/json", "X-Api-Key": this.key };
+  }
+
+  async recall(userId: string, query: string): Promise<string[]> {
+    try {
+      const res = await fetch(`${this.base}/api/v1/search`, {
+        method: "POST",
+        headers: this.headers(),
+        body: JSON.stringify({
+          query: query || "Summarize what you know about this person.",
+          search_type: "GRAPH_COMPLETION",
+          datasets: [datasetFor(userId)],
+        }),
+      });
+      if (!res.ok) throw new Error(`cognee search ${res.status}`);
+      const text = extractSearchText(await res.json());
+      return text ? [text] : [];
+    } catch (e) {
+      console.error("[cognee] recall -> supabase fallback:", (e as Error).message);
+      return this.fallback.recall(userId, query);
+    }
+  }
+
+  async remember(userId: string, turns: MemoryTurn[]): Promise<void> {
+    const text = turns
+      .map((t) => `${t.role === "user" ? "Them" : "Friend"}: ${t.content}`)
+      .join("\n")
+      .slice(0, 6000);
+    const dataset = datasetFor(userId);
+    try {
+      const add = await fetch(`${this.base}/api/v1/add`, {
+        method: "POST",
+        headers: this.headers(),
+        body: JSON.stringify({ data: text, datasetName: dataset }),
+      });
+      if (!add.ok) throw new Error(`cognee add ${add.status}`);
+      await fetch(`${this.base}/api/v1/cognify`, {
+        method: "POST",
+        headers: this.headers(),
+        body: JSON.stringify({ datasets: [dataset] }),
+      });
+    } catch (e) {
+      console.error("[cognee] remember -> supabase fallback:", (e as Error).message);
+      await this.fallback.remember(userId, turns);
+    }
+  }
+}
+
 let cached: MemoryStore | undefined;
 
 export function getMemory(): MemoryStore {
   if (cached) return cached;
-  // "cognee" is reserved for the Cognee engine once a host is chosen; until then
-  // every provider resolves to the Supabase memory so the feature works today.
-  cached = new SupabaseMemory();
+  const provider = (process.env.MEMORY_PROVIDER || "supabase").toLowerCase();
+  const cogKey = process.env.COGNEE_API_KEY;
+  if (provider === "cognee" && cogKey) {
+    cached = new CogneeMemory(
+      (process.env.COGNEE_BASE_URL || "https://api.cognee.ai").replace(/\/+$/, ""),
+      cogKey
+    );
+  } else {
+    cached = new SupabaseMemory();
+  }
   return cached;
 }
