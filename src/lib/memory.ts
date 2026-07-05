@@ -154,16 +154,14 @@ function extractSearchText(data: unknown): string {
   if (typeof data === "string") return data;
   if (Array.isArray(data)) {
     return data
-      .map((d) =>
-        typeof d === "string" ? d : d && typeof d === "object" ? JSON.stringify(d) : String(d)
-      )
+      .map((d) => extractSearchText(d))
       .filter(Boolean)
       .join(" ")
       .slice(0, 1200);
   }
   if (typeof data === "object") {
     const o = data as Record<string, unknown>;
-    for (const k of ["result", "results", "answer", "text", "completion", "search_results"]) {
+    for (const k of ["search_result", "search_results", "result", "results", "answer", "text", "completion"]) {
       if (o[k]) return extractSearchText(o[k]);
     }
   }
@@ -185,7 +183,7 @@ class CogneeMemory implements MemoryStore {
         headers: this.headers(),
         body: JSON.stringify({
           query: query || "Summarize what you know about this person.",
-          search_type: "GRAPH_COMPLETION",
+          search_type: process.env.COGNEE_SEARCH_TYPE || "GRAPH_COMPLETION",
           datasets: [datasetFor(userId)],
         }),
       });
@@ -205,17 +203,16 @@ class CogneeMemory implements MemoryStore {
       .slice(0, 6000);
     const dataset = datasetFor(userId);
     try {
-      const add = await fetch(`${this.base}/api/v1/add`, {
+      // /remember ingests + builds the knowledge graph in one call (multipart).
+      const form = new FormData();
+      form.append("data", new Blob([text], { type: "text/plain" }), "memory.txt");
+      form.append("datasetName", dataset);
+      const res = await fetch(`${this.base}/api/v1/remember`, {
         method: "POST",
-        headers: this.headers(),
-        body: JSON.stringify({ data: text, datasetName: dataset }),
+        headers: { "X-Api-Key": this.key }, // let fetch set the multipart boundary
+        body: form,
       });
-      if (!add.ok) throw new Error(`cognee add ${add.status}`);
-      await fetch(`${this.base}/api/v1/cognify`, {
-        method: "POST",
-        headers: this.headers(),
-        body: JSON.stringify({ datasets: [dataset] }),
-      });
+      if (!res.ok) throw new Error(`cognee remember ${res.status}`);
     } catch (e) {
       console.error("[cognee] remember -> supabase fallback:", (e as Error).message);
       await this.fallback.remember(userId, turns);
