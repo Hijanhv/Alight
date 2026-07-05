@@ -14,6 +14,7 @@ import {
   type ScoreResult,
 } from "@/lib/quiz-data";
 import { saveProfile } from "@/lib/progress";
+import { getUid } from "@/lib/uid";
 
 type Phase =
   | "intro"
@@ -381,7 +382,11 @@ export default function Quiz() {
           )}
 
           {phase === "result" && result && (
-            <Result result={result} name={name} />
+            <Result
+              result={result}
+              name={name}
+              context={{ childhood, currentStress, circumstances }}
+            />
           )}
         </div>
       </main>
@@ -423,9 +428,59 @@ function ContextSingle({
   );
 }
 
-function Result({ result, name }: { result: ScoreResult; name: string }) {
+interface AiProtocol {
+  name: string;
+  why: string;
+  seconds: number;
+  steps: string[];
+}
+
+function Result({
+  result,
+  name,
+  context,
+}: {
+  result: ScoreResult;
+  name: string;
+  context: { childhood: string; currentStress: string; circumstances: string[] };
+}) {
   const [shown, setShown] = useState(0);
+  const [ai, setAi] = useState<AiProtocol | null>(null);
+  const [personalizing, setPersonalizing] = useState(true);
   const target = result.regulationScore;
+
+  // Generate a real, personalized regulation protocol from the quiz result.
+  // Shows the curated protocol immediately and swaps in the AI one when ready.
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const res = await fetch("/api/protocol", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: getUid(),
+            typeKey: result.type.key,
+            regulationScore: result.regulationScore,
+            wired: result.wired,
+            shutdown: result.shutdown,
+            name,
+            context,
+          }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (alive && data && data.protocol) setAi(data.protocol as AiProtocol);
+      } catch {
+        /* keep the curated protocol */
+      } finally {
+        if (alive) setPersonalizing(false);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -489,10 +544,16 @@ function Result({ result, name }: { result: ScoreResult; name: string }) {
       </p>
 
       <div className="protocol">
-        <span className="kicker">Your first reset · free · {t.protocol.seconds}s</span>
-        <h3 className="display" style={{ marginTop: 8 }}>{t.protocol.name}</h3>
+        <span className="kicker">
+          Your first reset · free · {(ai ?? t.protocol).seconds}s
+          {personalizing ? " · personalizing…" : ai ? " · personalized for you ✨" : ""}
+        </span>
+        <h3 className="display" style={{ marginTop: 8 }}>{(ai ?? t.protocol).name}</h3>
+        {ai?.why && (
+          <p className="muted" style={{ marginTop: 6 }}>{ai.why}</p>
+        )}
         <ol>
-          {t.protocol.steps.map((s, i) => (
+          {(ai ?? t.protocol).steps.map((s, i) => (
             <li key={i}>{s}</li>
           ))}
         </ol>

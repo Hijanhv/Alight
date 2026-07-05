@@ -1,7 +1,9 @@
 import { NextResponse, after } from "next/server";
 import { FRIENDS, isFriendKey } from "@/lib/friends";
-import { chatComplete, type LlmMessage } from "@/lib/llm";
+import { chatCompleteDetailed, type LlmMessage } from "@/lib/llm";
 import { getMemory, type MemoryTurn } from "@/lib/memory";
+import { logAction } from "@/lib/action-log";
+import { storeSession } from "@/lib/session-memory";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -76,25 +78,44 @@ export async function POST(req: Request) {
     ...history,
   ];
 
-  const aiReply = await chatComplete(messages);
+  const started = Date.now();
+  const detail = await chatCompleteDetailed(messages);
+  const latencyMs = Date.now() - started;
   const pool = FALLBACKS[friend];
-  const reply = aiReply ?? pool[Math.floor(Math.random() * pool.length)];
-  const source = aiReply ? "ai" : "fallback";
+  const reply = detail?.text ?? pool[Math.floor(Math.random() * pool.length)];
+  const source = detail ? "ai" : "fallback";
+  const lastUserContent =
+    [...history].reverse().find((m) => m.role === "user")?.content ?? "";
 
-  // Fold this exchange into long-term memory after the reply is sent, so the
-  // person never waits on it (Cognee will plug in here behind the same call).
-  if (userId) {
-    const turns: MemoryTurn[] = [
-      ...history.map(
-        (m): MemoryTurn => ({
-          role: m.role === "assistant" ? "assistant" : "user",
-          content: m.content,
-        })
-      ),
-      { role: "assistant" as const, content: reply },
-    ].slice(-8);
-    after(() => getMemory().remember(userId, turns).catch(() => {}));
-  }
+  // After the reply is sent (so the person never waits): audit-log the
+  // interaction, fold it into long-term memory, and store it in the vector
+  // session memory. Cognee plugs in behind remember() when a host is chosen.
+  after(async () => {
+    await logAction({
+      userId,
+      kind: "chat",
+      model: detail?.model,
+      source: detail ? detail.provider : "fallback",
+      input: { friend, message: lastUserContent },
+      output: reply,
+      latencyMs,
+    });
+    if (userId) {
+      const turns: MemoryTurn[] = [
+        ...history.map(
+          (m): MemoryTurn => ({
+            role: m.role === "assistant" ? "assistant" : "user",
+            content: m.content,
+          })
+        ),
+        { role: "assistant" as const, content: reply },
+      ].slice(-8);
+      await getMemory().remember(userId, turns).catch(() => {});
+      if (lastUserContent && body.profile?.typeKey) {
+        await storeSession(userId, String(body.profile.typeKey), lastUserContent);
+      }
+    }
+  });
 
   return NextResponse.json({ reply, source });
 }
