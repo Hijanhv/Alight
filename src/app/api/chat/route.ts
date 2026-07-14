@@ -11,16 +11,16 @@ export const dynamic = "force-dynamic";
 // Used when no free AI key is configured yet — keeps the friends usable.
 const FALLBACKS: Record<string, string[]> = {
   lily: [
-    "I hear you. That sounds like a lot to be holding — let's slow it down together. What feels heaviest right now?",
+    "I hear you. That sounds like a lot to be holding, so let's slow it down together. What feels heaviest right now?",
     "Thank you for telling me. You don't have to have it all figured out. What would feel kind to you in this moment?",
-    "That makes so much sense. Take a slow breath with me — in through your nose, longer out through your mouth. I'm right here.",
+    "That makes so much sense. Take a slow breath with me, in through your nose, longer out through your mouth. I'm right here.",
     "You're allowed to feel this. Nothing's wrong with you. What's one small thing that would make the next hour a little softer?",
   ],
   john: [
-    "Okay. Let's not try to fix everything — just the next small step. What's one tiny thing you could start in the next two minutes?",
+    "Okay. Let's not try to fix everything, just the next small step. What's one tiny thing you could start in the next two minutes?",
     "Got it. Overwhelm usually means the task is too big in your head. What's the smallest possible version of it?",
-    "Fair enough. Before we plan anything — shake your hands out, take one slow breath. Now: what's the one thing that matters most today?",
-    "That's real. You're not behind, you're stuck — different problem. Name the very first move and we'll start there.",
+    "Fair enough. Before we plan anything, shake your hands out and take one slow breath. Now: what's the one thing that matters most today?",
+    "That's real. You're not behind, you're stuck, and that's a different problem. Name the very first move and we'll start there.",
   ],
 };
 

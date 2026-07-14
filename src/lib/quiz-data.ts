@@ -17,9 +17,9 @@ export interface Statement {
 export const statements: Statement[] = [
   { id: "w1", text: "My body feels tense and I can't fully switch off.", axis: "wired" },
   { id: "w2", text: "My heart races or my breathing turns shallow.", axis: "wired" },
-  { id: "w3", text: "I feel on edge — restless, wired, or easily agitated.", axis: "wired" },
+  { id: "w3", text: "I feel on edge, restless, wired, or easily agitated.", axis: "wired" },
   { id: "w4", text: "I overthink and replay things long after they're over.", axis: "wired" },
-  { id: "w5", text: "My reactions jump from 0 to 100 — small things hit hard.", axis: "wired" },
+  { id: "w5", text: "My reactions jump from 0 to 100, small things hit hard.", axis: "wired" },
   { id: "w6", text: "After something stressful, it takes me ages to calm back down.", axis: "wired" },
   { id: "w7", text: "I push through until my body forces me to stop.", axis: "wired" },
   { id: "w8", text: "I clench my jaw or grind my teeth.", axis: "wired" },
@@ -35,7 +35,7 @@ export const statements: Statement[] = [
   { id: "s5", text: "I have no motivation for the things that are good for me.", axis: "shutdown" },
   { id: "s6", text: "I feel emotionally flat, numb, or drained.", axis: "shutdown" },
   { id: "s7", text: "My libido has dropped noticeably.", axis: "shutdown" },
-  { id: "s8", text: "I feel stuck — not working, not resting, not even really procrastinating.", axis: "shutdown" },
+  { id: "s8", text: "I feel stuck, not working, not resting, not even really procrastinating.", axis: "shutdown" },
   { id: "s9", text: "I scroll my phone for hours to avoid my own thoughts.", axis: "shutdown" },
   { id: "s10", text: "I feel most at ease when I'm distracted or a little checked-out.", axis: "shutdown" },
   { id: "s11", text: "I feel bloated or heavy after eating.", axis: "shutdown" },
@@ -44,10 +44,10 @@ export const statements: Statement[] = [
   { id: "s14", text: "I'm tired and low on energy because my mind is worn out.", axis: "shutdown" },
   { id: "s15", text: "I feel like I look older or more worn-down than I should.", axis: "shutdown" },
   { id: "s16", text: "When I'm overwhelmed, I withdraw and isolate myself.", axis: "shutdown" },
-  { id: "s17", text: "I have no drive left — I'm running on survival mode.", axis: "shutdown" },
+  { id: "s17", text: "I have no drive left. I'm running on survival mode.", axis: "shutdown" },
 ];
 
-// ---- Context questions (not scored — they personalize the result & lead) ----
+// Context questions (not scored; they personalize the result and lead)
 
 export interface Choice {
   value: string;
@@ -80,14 +80,14 @@ export const childhoodQuestion = {
 export const currentStressQuestion = {
   id: "currentStress",
   text: "Is there extra stress weighing on you right now?",
-  help: "Money, work, relationships, health — anything adding load.",
+  help: "Money, work, relationships, health, anything adding load.",
   options: scaleFour,
 };
 
 export const circumstanceQuestion = {
   id: "circumstances",
   text: "Is any of this part of your life at the moment?",
-  help: "Select all that apply — it helps us understand the load you're carrying.",
+  help: "Select all that apply. It helps us understand the load you're carrying.",
   options: [
     { value: "trauma", label: "Healing from trauma" },
     { value: "finances", label: "Financial difficulties" },
@@ -154,7 +154,7 @@ const ANCHOR: Protocol = {
   steps: [
     "Breathe in for a count of four.",
     "Hold gently for four.",
-    "Breathe out for six — a longer exhale keeps you calm and steady.",
+    "Breathe out for six. A longer exhale keeps you calm and steady.",
     "Repeat four times to protect the regulated state you are already in.",
   ],
 };
@@ -165,7 +165,7 @@ export const resultTypes: Record<string, ResultType> = {
     name: "The Wired Freezer",
     tagline: "Your survival mode runs hot.",
     what:
-      "Your nervous system is stuck in high sympathetic arousal — racing thoughts, tension, restlessness. Tasks feel like threats, so you spin, avoid, then crash. You don't need more pressure. You need to discharge the charge first.",
+      "Your nervous system is stuck in high sympathetic arousal: racing thoughts, tension, restlessness. Tasks feel like threats, so you spin, avoid, then crash. You don't need more pressure. You need to discharge the charge first.",
     protocol: SIGH,
     planFocus: [
       "Fast downshift resets for the moments before a task",
@@ -178,7 +178,7 @@ export const resultTypes: Record<string, ResultType> = {
     name: "The Shutdown Freezer",
     tagline: "Your survival mode goes quiet.",
     what:
-      "Your nervous system has dropped into dorsal-vagal shutdown — numb, foggy, heavy, disconnected. This isn't laziness; it's a protective freeze. The way out is gentle activation, not force: small cues of safety and movement that lift you back up.",
+      "Your nervous system has dropped into dorsal-vagal shutdown: numb, foggy, heavy, disconnected. This isn't laziness; it's a protective freeze. The way out is gentle activation, not force: small cues of safety and movement that lift you back up.",
     protocol: ORIENT,
     planFocus: [
       "Gentle activation resets that lift you out of the fog",
@@ -191,7 +191,7 @@ export const resultTypes: Record<string, ResultType> = {
     name: "The Overloaded Freezer",
     tagline: "Wired and shut down at once.",
     what:
-      "You swing between racing and numb — revved up and running on empty at the same time. Your system is carrying too much load to regulate on its own. The move is to discharge the charge, then gently orient, before asking anything of yourself.",
+      "You swing between racing and numb, revved up and running on empty at the same time. Your system is carrying too much load to regulate on its own. The move is to discharge the charge, then gently orient, before asking anything of yourself.",
     protocol: COMBINE,
     planFocus: [
       "A two-step reset for when you're wired and drained together",
@@ -202,7 +202,7 @@ export const resultTypes: Record<string, ResultType> = {
   steady: {
     key: "steady",
     name: "The Steady Starter",
-    tagline: "Mostly regulated — let's protect it.",
+    tagline: "Mostly regulated. Let's protect it.",
     what:
       "Your nervous system is regulated more often than not. Procrastination, when it shows up, is more habit than freeze. Alight helps you guard this calm and turn it into consistent, easy starts.",
     protocol: ANCHOR,

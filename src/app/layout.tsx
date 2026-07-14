@@ -1,32 +1,32 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Figtree } from "next/font/google";
+import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import PWARegister from "@/components/PWARegister";
 import ScrollReveal from "@/components/ScrollReveal";
 import { Analytics } from "@vercel/analytics/next";
 
-const fraunces = Fraunces({
+const playfair = Playfair_Display({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-fraunces",
-  weight: ["400", "500", "600", "700"],
+  variable: "--ff-serif",
+  weight: ["400", "500", "600", "700", "800"],
   style: ["normal", "italic"],
 });
 
-const figtree = Figtree({
+const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-figtree",
-  weight: ["400", "500", "600", "700"],
+  variable: "--ff-sans",
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 const description =
-  "Procrastination is not laziness — it is a freeze response from a dysregulated nervous system. Alight uses 2-minute somatic resets to help you calm down and start. Take the free 2-minute quiz.";
+  "Procrastination is not laziness. It is a freeze response from a dysregulated nervous system. Alight uses 2-minute somatic resets to help you calm down and start. Take the free 2-minute quiz.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://alight.vercel.app"),
   title: {
-    default: "Alight — stop procrastinating by regulating your nervous system",
+    default: "Alight: stop procrastinating by regulating your nervous system",
     template: "%s · Alight",
   },
   description,
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     "freeze response",
   ],
   openGraph: {
-    title: "Alight — stop procrastinating by regulating your nervous system",
+    title: "Alight: stop procrastinating by regulating your nervous system",
     description,
     url: "/",
     siteName: "Alight",
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#F5F9F8",
+  themeColor: "#FFF6FB",
   colorScheme: "light",
 };
 
@@ -70,7 +70,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${figtree.variable}`}>
+    <html lang="en" className={`${playfair.variable} ${jakarta.variable}`}>
       <body>
         {children}
         <PWARegister />

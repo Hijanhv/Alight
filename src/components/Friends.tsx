@@ -80,7 +80,7 @@ export default function Friends() {
         {
           role: "assistant",
           content:
-            "I'm having trouble reaching you right now — but I'm still here. Try again in a moment?",
+            "I'm having trouble reaching you right now, but I'm still here. Try again in a moment?",
         },
       ]);
     } finally {
@@ -103,7 +103,7 @@ export default function Friends() {
           <span className="q-section">Your Alight friends</span>
           <h1 className="q-text" style={{ marginTop: 12 }}>Who do you want to talk to?</h1>
           <p className="muted" style={{ marginTop: 10 }}>
-            Two friends, always here. Pick whoever fits right now — you can switch anytime.
+            Two friends, always here. Pick whoever fits right now. You can switch anytime.
           </p>
           <div className="friend-pick">
             {(Object.keys(FRIENDS) as FriendKey[]).map((k) => {

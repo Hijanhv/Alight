@@ -11,7 +11,7 @@ const EXTRA: Record<string, Protocol[]> = {
       steps: [
         "Breathe in through your nose for a slow count of 4.",
         "Breathe out through your mouth for a count of 8.",
-        "The long exhale is the signal — it tells your body the threat has passed.",
+        "The long exhale is the signal. It tells your body the threat has passed.",
         "Repeat for six rounds.",
       ],
     },
@@ -19,7 +19,7 @@ const EXTRA: Record<string, Protocol[]> = {
       name: "Cool the System",
       seconds: 60,
       steps: [
-        "Run your wrists under cold water for 20–30 seconds.",
+        "Run your wrists under cold water for 20 to 30 seconds.",
         "Or press a cool, damp cloth over your cheeks and eyes.",
         "Cold on the face triggers the calming dive reflex.",
         "Take three slow breaths as the heat drains out.",
@@ -33,7 +33,7 @@ const EXTRA: Record<string, Protocol[]> = {
       steps: [
         "Stand up and gently bounce on your heels for 20 seconds.",
         "Shake out your hands, then your arms, then your legs.",
-        "Let it be a little sloppy — you are discharging stuck energy.",
+        "Let it be a little sloppy. You are discharging stuck energy.",
         "Finish with one big breath and a stretch upward.",
       ],
     },
@@ -44,7 +44,7 @@ const EXTRA: Record<string, Protocol[]> = {
         "Take a comfortable breath in.",
         "On the exhale, hum a low, steady note until you run out of air.",
         "Feel the buzz in your chest and throat.",
-        "Repeat four times — humming tones the vagus nerve.",
+        "Repeat four times. Humming tones the vagus nerve.",
       ],
     },
   ],
@@ -75,7 +75,7 @@ const EXTRA: Record<string, Protocol[]> = {
       name: "Catch a Glimmer",
       seconds: 60,
       steps: [
-        "Look around for one small good thing — light, warmth, a sound you like.",
+        "Look around for one small good thing: light, warmth, a sound you like.",
         "Rest your attention on it for a few breaths.",
         "Let yourself actually feel the tiny lift.",
         "Glimmers gently train your system toward safety.",

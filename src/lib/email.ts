@@ -75,7 +75,7 @@ export async function sendWelcomeEmail(params: {
     await resend.emails.send({
       from,
       to: params.email,
-      subject: type ? `${name}, here is your reset — ${type.name}` : "Your Alight reset",
+      subject: type ? `${name}, here is your reset: ${type.name}` : "Your Alight reset",
       html: welcomeHtml({ name, type, score: params.regulationScore ?? undefined }),
     });
   } catch (e) {

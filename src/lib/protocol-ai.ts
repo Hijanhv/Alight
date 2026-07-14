@@ -48,7 +48,7 @@ export async function generateProtocol(input: ProtocolInput): Promise<ProtocolOu
   };
 
   const bits: string[] = [];
-  bits.push(`Nervous-system type: ${input.typeKey} (${base.name} — ${base.tagline}).`);
+  bits.push(`Nervous-system type: ${input.typeKey} (${base.name}, ${base.tagline}).`);
   if (typeof input.regulationScore === "number")
     bits.push(`Regulation score: ${input.regulationScore}/100 (higher = more regulated).`);
   if (typeof input.wired === "number" && typeof input.shutdown === "number")

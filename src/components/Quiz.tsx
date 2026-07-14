@@ -32,7 +32,7 @@ const OPTIONS = [
   { v: 0, label: "Rarely", mark: "○" },
 ];
 
-// Fire-and-forget lead capture — never blocks or breaks the quiz UI.
+// Fire-and-forget lead capture; never blocks or breaks the quiz UI.
 function saveLead(payload: Record<string, unknown>) {
   try {
     fetch("/api/lead", {
@@ -202,7 +202,7 @@ export default function Quiz() {
               <p className="lede" style={{ margin: "18px auto 0", textAlign: "center" }}>
                 A short, honest check-in about your body, mind, and daily
                 patterns. In about two minutes you will get your nervous-system
-                type and a reset you can use right now — free.
+                type and a reset you can use right now, free.
               </p>
               <button
                 className="btn btn-primary btn-lg"
@@ -259,7 +259,7 @@ export default function Quiz() {
               <div className="q-nav">
                 <button className="link-btn" onClick={back}>← Back</button>
                 <span className="muted" style={{ fontSize: "0.85rem" }}>
-                  Answer honestly — there are no wrong answers
+                  Answer honestly. There are no wrong answers
                 </span>
               </div>
             </div>
@@ -575,7 +575,7 @@ function Result({
           Start my first reset →
         </Link>
         <p className="fineprint">
-          Free during early access. Add it to your home screen — no app store needed.
+          Free during early access. Add it to your home screen, no app store needed.
         </p>
       </div>
 

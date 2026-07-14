@@ -1,5 +1,5 @@
 {
-  "name": "Alight — regulate, then get moving",
+  "name": "Alight: regulate, then get moving",
   "short_name": "Alight",
   "id": "/",
   "description": "Stop procrastinating by regulating your nervous system. 2-minute somatic resets that help you calm down and start.",
@@ -9,8 +9,8 @@
   "display_override": ["standalone", "minimal-ui"],
   "lang": "en",
   "dir": "ltr",
-  "background_color": "#F5F9F8",
-  "theme_color": "#F5F9F8",
+  "background_color": "#FFF6FB",
+  "theme_color": "#FFF6FB",
   "orientation": "portrait",
   "categories": ["health", "lifestyle", "productivity"],
   "icons": [

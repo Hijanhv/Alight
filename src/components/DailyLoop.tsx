@@ -97,7 +97,7 @@ export default function DailyLoop() {
               <div className="stat-row">
                 <div className="stat"><div className="n">{progress.streak}</div><div className="l">day streak</div></div>
                 <div className="stat"><div className="n">{progress.totalSessions}</div><div className="l">resets done</div></div>
-                <div className="stat"><div className="n">{profile?.regulationScore ?? "—"}</div><div className="l">regulation</div></div>
+                <div className="stat"><div className="n">{profile?.regulationScore ?? "·"}</div><div className="l">regulation</div></div>
               </div>
               {doneToday ? (
                 <>
@@ -117,7 +117,7 @@ export default function DailyLoop() {
                       <Link href="/quiz" style={{ color: "var(--primary)", fontWeight: 600 }}>
                         take the 2-minute quiz
                       </Link>{" "}
-                      to personalize your loop — or just start now.
+                      to personalize your loop, or just start now.
                     </p>
                   )}
                   <button className="btn btn-primary btn-block btn-lg" style={{ marginTop: 24 }} onClick={() => setPhase("checkin")}>
@@ -180,9 +180,9 @@ export default function DailyLoop() {
           {phase === "initiate" && (
             <div className="q-enter">
               <span className="q-section">Initiate · step 2 of 3</span>
-              <h2 className="q-text">Now — one tiny first step.</h2>
+              <h2 className="q-text">Now, one tiny first step.</h2>
               <p className="muted" style={{ marginTop: 10 }}>
-                Small enough that starting feels easy. Your system is calmer now — use it.
+                Small enough that starting feels easy. Your system is calmer now. Use it.
               </p>
               <div className="field">
                 <input
@@ -228,7 +228,7 @@ export default function DailyLoop() {
               </div>
               <h2 className="q-text" style={{ marginTop: 8 }}>That is a win.</h2>
               <p className="lede" style={{ margin: "14px auto 0" }}>
-                You regulated, then you started — {progress.streak}-day streak.
+                You regulated, then you started. {progress.streak}-day streak.
               </p>
               <button className="btn btn-primary btn-lg" style={{ marginTop: 24 }} onClick={() => setPhase("today")}>
                 Back to today
